@@ -35,4 +35,12 @@ Tests are automatically run on:
 - Every push to `master` branch
 - Every pull request to `master` branch
 
+### Manual Trigger
+You can manually trigger the tests through GitHub Actions:
+1. Go to the "Actions" tab in your repository
+2. Click on "Playwright Tests" workflow
+3. Click "Run workflow" button
+4. Select the browser (chromium/firefox/webkit)
+5. Click "Run workflow" to start the tests
+
 Test reports are available in the GitHub Actions artifacts for each run.
