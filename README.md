@@ -7,11 +7,64 @@ This repository contains automated tests for the Movie App using Playwright Test
 ## Features
 
 - End-to-end testing of movie search and details functionality
-- Page Object Model implementation with `MoviePageHelper` class
+- Configurable Page Object Model implementation with `MoviePageHelper` class
+- Support for different environments, languages, and UI variations through configuration
 - Unit tests for helper methods
 - GitHub Actions integration for continuous testing
 - Allure reporting for detailed test results and analytics
 - Automated test reports generation
+
+## MoviePageHelper Configuration
+
+The `MoviePageHelper` class now supports custom configuration to adapt to different applications, environments, or UI variations:
+
+### Basic Usage (Default Configuration)
+```typescript
+import { MoviePageHelper } from './helpers/MoviePageHelper';
+
+// Uses default configuration for the movie app
+const moviePage = new MoviePageHelper(page);
+```
+
+### Custom Configuration
+```typescript
+import { MoviePageHelper, MoviePageConfig } from './helpers/MoviePageHelper';
+
+const customConfig: MoviePageConfig = {
+  baseUrl: 'https://staging-movie-app.com',
+  searchButtonText: 'Find Movies',
+  darkModeSymbol: '🌙',
+  lightModeSymbol: '☀️',
+  loadingText: 'Loading movies...'
+};
+
+const moviePage = new MoviePageHelper(page, customConfig);
+```
+
+### Available Configuration Options
+
+| Property | Default Value | Description |
+|----------|---------------|-------------|
+| `baseUrl` | `'https://debs-obrien.github.io/playwright-movies-app/'` | Base URL of the application |
+| `searchButtonText` | `'Search for a movie'` | Text/label for the search button |
+| `searchInputLabel` | `'Search Input'` | Label for the search input field |
+| `searchPlaceholder` | `'Search for a movie'` | Placeholder text for search input |
+| `loadingText` | `'Please wait a moment'` | Loading message text |
+| `synopsisHeading` | `'The Synopsis'` | Synopsis section heading |
+| `genresHeading` | `'The Genres'` | Genres section heading |
+| `darkModeSymbol` | `'☾'` | Dark mode button symbol |
+| `lightModeSymbol` | `'☀'` | Light mode button symbol |
+| `page2ButtonText` | `'Page 2'` | Page 2 navigation button text |
+| `sorryHeading` | `'Sorry!'` | No results message heading |
+| `starSymbol` | `'★'` | Star rating symbol |
+| `movieLinkPattern` | `/poster of .* rating/i` | Pattern for movie link recognition |
+
+### Use Cases
+
+1. **Different Environments**: Test against staging, production, or local environments
+2. **Internationalization**: Support different languages and locales
+3. **UI Variations**: Adapt to different themes or symbol sets
+4. **A/B Testing**: Test different UI variations with the same test logic
 
 ## Running Tests
 

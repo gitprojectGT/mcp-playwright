@@ -1,10 +1,29 @@
 import { test, expect } from '@playwright/test';
-import { MoviePageHelper } from '../../helpers/MoviePageHelper';
+import { MoviePageHelper, MoviePageConfig } from '../../helpers/MoviePageHelper';
 
 test.describe('MoviePageHelper', () => {
     test('should initialize with correct URL', async ({ page }) => {
         const helper = new MoviePageHelper(page);
         expect(helper.url).toBe('https://debs-obrien.github.io/playwright-movies-app/');
+    });
+
+    test('should initialize with custom configuration', async ({ page }) => {
+        const customConfig: MoviePageConfig = {
+            baseUrl: 'https://custom-movie-app.com',
+            searchButtonText: 'Find Movies',
+            loadingText: 'Loading movies...',
+            darkModeSymbol: '🌙',
+            lightModeSymbol: '☀️'
+        };
+        
+        const helper = new MoviePageHelper(page, customConfig);
+        expect(helper.url).toBe('https://custom-movie-app.com');
+        
+        // Verify that the helper uses custom configuration
+        expect(helper.searchButton).toBeDefined();
+        expect(helper.loadingMessage).toBeDefined();
+        expect(helper.darkModeButton).toBeDefined();
+        expect(helper.lightModeButton).toBeDefined();
     });
 
     test('should get locators correctly', async ({ page }) => {

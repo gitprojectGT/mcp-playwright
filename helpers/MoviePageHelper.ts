@@ -1,20 +1,61 @@
 import { Page, Locator } from '@playwright/test';
 
 /**
+ * Configuration interface for MoviePageHelper
+ * Allows customization of strings and selectors used in the helper
+ */
+export interface MoviePageConfig {
+    baseUrl?: string;
+    searchButtonText?: string;
+    searchInputLabel?: string;
+    searchPlaceholder?: string;
+    loadingText?: string;
+    synopsisHeading?: string;
+    genresHeading?: string;
+    darkModeSymbol?: string;
+    lightModeSymbol?: string;
+    page2ButtonText?: string;
+    sorryHeading?: string;
+    starSymbol?: string;
+    movieLinkPattern?: RegExp;
+}
+
+/**
+ * Default configuration for the Movie App
+ */
+const DEFAULT_CONFIG: Required<MoviePageConfig> = {
+    baseUrl: 'https://debs-obrien.github.io/playwright-movies-app/',
+    searchButtonText: 'Search for a movie',
+    searchInputLabel: 'Search Input',
+    searchPlaceholder: 'Search for a movie',
+    loadingText: 'Please wait a moment',
+    synopsisHeading: 'The Synopsis',
+    genresHeading: 'The Genres',
+    darkModeSymbol: '☾',
+    lightModeSymbol: '☀',
+    page2ButtonText: 'Page 2',
+    sorryHeading: 'Sorry!',
+    starSymbol: '★',
+    movieLinkPattern: /poster of .* rating/i
+};
+
+/**
  * Helper class for interacting with the Movie App
  * Provides methods and locators for all major page interactions
  */
 export class MoviePageHelper {
     readonly page: Page;
+    private readonly config: Required<MoviePageConfig>;
     private readonly defaultTimeout = 30000;
 
-    constructor(page: Page) {
+    constructor(page: Page, config: MoviePageConfig = {}) {
         this.page = page;
+        this.config = { ...DEFAULT_CONFIG, ...config };
     }
 
     // Navigation
     get url() {
-        return 'https://debs-obrien.github.io/playwright-movies-app/';
+        return this.config.baseUrl;
     }
 
     /**
@@ -32,11 +73,11 @@ export class MoviePageHelper {
 
     // Search elements
     get searchButton(): Locator {
-        return this.page.getByRole('button', { name: 'Search for a movie' }).or(this.page.getByLabel('Search for a movie'));
+        return this.page.getByRole('button', { name: this.config.searchButtonText }).or(this.page.getByLabel(this.config.searchButtonText));
     }
 
     get searchInput(): Locator {
-        return this.page.getByRole('textbox', { name: 'Search Input' }).or(this.page.getByPlaceholder('Search for a movie'));
+        return this.page.getByRole('textbox', { name: this.config.searchInputLabel }).or(this.page.getByPlaceholder(this.config.searchPlaceholder));
     }
 
     get searchForm(): Locator {
@@ -44,7 +85,7 @@ export class MoviePageHelper {
     }
 
     get loadingMessage(): Locator {
-        return this.page.getByText('Please wait a moment');
+        return this.page.getByText(this.config.loadingText);
     }
 
     /**
@@ -68,7 +109,7 @@ export class MoviePageHelper {
     }
 
     get firstMovieLink(): Locator {
-        return this.page.getByRole('link', { name: /poster of .* rating/i }).first();
+        return this.page.getByRole('link', { name: this.config.movieLinkPattern }).first();
     }
 
     get movieTitleInDetails(): Locator {
@@ -77,24 +118,24 @@ export class MoviePageHelper {
 
     // Movie details elements
     get synopsisHeading(): Locator {
-        return this.page.getByRole('heading', { name: 'The Synopsis', level: 3 });
+        return this.page.getByRole('heading', { name: this.config.synopsisHeading, level: 3 });
     }
 
     get genresHeading(): Locator {
-        return this.page.getByRole('heading', { name: 'The Genres', level: 3 });
+        return this.page.getByRole('heading', { name: this.config.genresHeading, level: 3 });
     }
 
     get movieRating(): Locator {
-        return this.page.locator('main').getByText(/★/).first();
+        return this.page.locator('main').getByText(new RegExp(this.config.starSymbol)).first();
     }
 
     // Theme elements
     get darkModeButton(): Locator {
-        return this.page.getByRole('button', { name: '☾' });
+        return this.page.getByRole('button', { name: this.config.darkModeSymbol });
     }
 
     get lightModeButton(): Locator {
-        return this.page.getByRole('button', { name: '☀' });
+        return this.page.getByRole('button', { name: this.config.lightModeSymbol });
     }
 
     get bodyElement(): Locator {
@@ -103,15 +144,15 @@ export class MoviePageHelper {
 
     // Pagination elements
     get page2Button(): Locator {
-        return this.page.getByRole('button', { name: 'Page 2' });
+        return this.page.getByRole('button', { name: this.config.page2ButtonText });
     }
 
     get allMovieTitles(): Locator {
-        return this.page.locator('li').filter({ hasText: /★/ }).locator('h2');
+        return this.page.locator('li').filter({ hasText: new RegExp(this.config.starSymbol) }).locator('h2');
     }
 
     get movieCardsWithRating(): Locator {
-        return this.page.locator('li').filter({ hasText: /★/ });
+        return this.page.locator('li').filter({ hasText: new RegExp(this.config.starSymbol) });
     }
 
     // Helper methods
@@ -148,7 +189,7 @@ export class MoviePageHelper {
     }
 
     async hasSearchResults(): Promise<boolean> {
-        const sorryHeading = this.page.getByRole('heading', { name: 'Sorry!', level: 3 });
+        const sorryHeading = this.page.getByRole('heading', { name: this.config.sorryHeading, level: 3 });
         return !(await sorryHeading.isVisible());
     }
 }
