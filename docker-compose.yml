@@ -1,0 +1,45 @@
+services:
+  playwright-tests:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mcp-playwright-tests
+    volumes:
+      # Mount test results and reports to host for persistence
+      - ./test-results:/app/test-results
+      - ./playwright-report:/app/playwright-report
+      - ./allure-results:/app/allure-results
+      - ./allure-report:/app/allure-report
+      # Mount source code for development (optional)
+      - ./tests:/app/tests:ro
+      - ./helpers:/app/helpers:ro
+    environment:
+      - CI=true
+      - PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+      - ALLURE_RESULTS_DIR=/app/allure-results
+    ports:
+      - "45281:45281"  # For Allure report server
+    networks:
+      - playwright-network
+
+  # Optional: Allure report server
+  allure-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mcp-playwright-allure
+    command: ["npm", "run", "allure:serve"]
+    volumes:
+      - ./allure-results:/app/allure-results:ro
+    ports:
+      - "45282:45281"
+    depends_on:
+      - playwright-tests
+    networks:
+      - playwright-network
+    profiles:
+      - allure
+
+networks:
+  playwright-network:
+    driver: bridge
