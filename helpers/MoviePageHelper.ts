@@ -1,7 +1,12 @@
 import { Page, Locator } from '@playwright/test';
 
+/**
+ * Helper class for interacting with the Movie App
+ * Provides methods and locators for all major page interactions
+ */
 export class MoviePageHelper {
     readonly page: Page;
+    private readonly defaultTimeout = 30000;
 
     constructor(page: Page) {
         this.page = page;
@@ -12,17 +17,49 @@ export class MoviePageHelper {
         return 'https://debs-obrien.github.io/playwright-movies-app/';
     }
 
+    /**
+     * Waits for search results to load
+     * @returns Promise<boolean> true if results are found, false otherwise
+     */
+    private async waitForSearchResults(): Promise<boolean> {
+        try {
+            await this.allMovieTitles.first().waitFor({ timeout: 5000 });
+            return true;
+        } catch {
+            return false;
+        }
+    }
+
     // Search elements
     get searchButton(): Locator {
-        return this.page.getByRole('button', { name: 'Search for a movie' });
+        return this.page.getByRole('button', { name: 'Search for a movie' }).or(this.page.getByLabel('Search for a movie'));
     }
 
     get searchInput(): Locator {
-        return this.page.getByRole('textbox', { name: 'Search Input' });
+        return this.page.getByRole('textbox', { name: 'Search Input' }).or(this.page.getByPlaceholder('Search for a movie'));
+    }
+
+    get searchForm(): Locator {
+        return this.page.getByRole('search');
     }
 
     get loadingMessage(): Locator {
         return this.page.getByText('Please wait a moment');
+    }
+
+    /**
+     * Initiates search interaction in a way that handles both expanded and collapsed search states
+     */
+    async initiateSearch(): Promise<void> {
+        // Try clicking the form first if it's visible
+        const form = await this.searchForm;
+        if (await form.isVisible()) {
+            await form.click();
+            return;
+        }
+        
+        // Fallback to button click if form isn't directly clickable
+        await this.searchButton.click();
     }
 
     // Movie elements
@@ -83,8 +120,7 @@ export class MoviePageHelper {
     }
 
     async searchForMovie(searchTerm: string) {
-        await this.searchButton.click({ force: true });
-        await this.page.waitForTimeout(1000); // Wait for animations
+        await this.initiateSearch();
         await this.searchInput.fill(searchTerm);
         await this.searchInput.press('Enter');
         
