@@ -10,6 +10,7 @@ This repository contains automated tests for the Movie App using Playwright Test
 - Page Object Model implementation with `MoviePageHelper` class
 - Unit tests for helper methods
 - GitHub Actions integration for continuous testing
+- Allure reporting for detailed test results and analytics
 - Automated test reports generation
 
 ## Running Tests
@@ -26,22 +27,56 @@ npx playwright install --with-deps
 
 Run tests:
 ```bash
-npx playwright test
+npm test
 ```
+
+Run tests with Allure reporting:
+```bash
+npm run test:allure
+```
+
+Generate Allure report:
+```bash
+npm run allure:generate
+```
+
+Serve Allure report:
+```bash
+npm run allure:serve
+```
+
+## Allure Reporting
+
+This project uses Allure for comprehensive test reporting with the following features:
+
+- **Rich Test Reports**: Visual reports with test execution details, screenshots, and logs
+- **Test Analytics**: Historical data, trends, and flaky test detection
+- **Integration**: Automatically generated in CI/CD pipeline
+- **Artifacts**: Test results and reports are saved as GitHub Actions artifacts
+
+### Available Scripts
+
+- `npm run test:allure` - Run tests with Allure reporter
+- `npm run allure:generate` - Generate static HTML report from results
+- `npm run allure:serve` - Start local server to view report
+- `npm run allure:open` - Open generated report in browser
 
 ## CI/CD
 
-The test workflow runs in two stages:
+The test workflow runs in two stages with Allure reporting:
 
 1. **Unit Tests**
    - Runs tests in `tests/unit/` directory
    - Must pass before integration tests can start
-   - Test report available as "unit-test-report" artifact
+   - Generates both HTML and Allure reports
+   - Artifacts: "unit-test-report", "unit-allure-report", "unit-allure-results"
 
 2. **Integration Tests**
    - Runs only after unit tests pass
    - Executes all non-unit tests
    - Can be run on different browsers (chromium/firefox/webkit)
+   - Generates both HTML and Allure reports
+   - Artifacts: "integration-test-report", "integration-allure-report", "integration-allure-results"
    - Test report available as "integration-test-report" artifact
 
 Tests are automatically run on:
