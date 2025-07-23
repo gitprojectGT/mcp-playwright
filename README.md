@@ -31,6 +31,19 @@ npx playwright test
 
 ## CI/CD
 
+The test workflow runs in two stages:
+
+1. **Unit Tests**
+   - Runs tests in `tests/unit/` directory
+   - Must pass before integration tests can start
+   - Test report available as "unit-test-report" artifact
+
+2. **Integration Tests**
+   - Runs only after unit tests pass
+   - Executes all non-unit tests
+   - Can be run on different browsers (chromium/firefox/webkit)
+   - Test report available as "integration-test-report" artifact
+
 Tests are automatically run on:
 - Every push to `master` branch
 - Every pull request to `master` branch
@@ -40,7 +53,7 @@ You can manually trigger the tests through GitHub Actions:
 1. Go to the "Actions" tab in your repository
 2. Click on "Playwright Tests" workflow
 3. Click "Run workflow" button
-4. Select the browser (chromium/firefox/webkit)
+4. Select the browser for integration tests (chromium/firefox/webkit)
 5. Click "Run workflow" to start the tests
 
-Test reports are available in the GitHub Actions artifacts for each run.
+Both unit test and integration test reports are available in the GitHub Actions artifacts for each run.
