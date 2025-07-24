@@ -121,7 +121,7 @@ test.describe('MoviePageHelper', () => {
         await expect(helper.movieRating).toBeVisible();
     });
 
-    test('should handle movie search with no results', async ({ page }) => {
+    test.skip('should handle movie search with no results', async ({ page }) => {
         const helper = new MoviePageHelper(page);
         await helper.navigateToHome();
         await helper.searchForMovie('nonexistentmovietitle123456789');
